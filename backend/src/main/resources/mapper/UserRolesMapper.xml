@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserRolesMapper">
+    <sql id="columns">
+        assignment_id, account_id, role_code, approver_id, valid_start, valid_end,
+        assignment_source, assignment_status, created_at, updated_at
+    </sql>
+</mapper>

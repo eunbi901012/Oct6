@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DetailCodesMapper">
+    <sql id="columns">
+        detail_code_id, code_group_id, code_value, code_name, parent_detail_code_id,
+        display_order, CAST(additional_attributes AS TEXT) AS additional_attributes,
+        use_status, valid_start, valid_end, created_at, updated_at
+    </sql>
+</mapper>
