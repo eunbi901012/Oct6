@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrganizationsMapper">
+    <sql id="columns">
+        organization_id, organization_code, organization_name, organization_type,
+        parent_organization_id, effective_start, effective_end, use_status, created_at, updated_at
+    </sql>
+</mapper>

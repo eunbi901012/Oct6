@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+.next/
+coverage/
+*.log
+playwright-report/
+test-results/
+.env.local

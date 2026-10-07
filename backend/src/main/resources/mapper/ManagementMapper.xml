@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.knue.common.adapter.mybatis.ManagementMapper">
+    <sql id="projection">
+        <choose>
+            <when test="resource.table == 'user_account'">
+                <include refid="AccountsMapper.columns"/>
+            </when>
+            <when test="resource.table == 'detail_code'">
+                <include refid="DetailCodesMapper.columns"/>
+            </when>
+            <when test="resource.table == 'role'">
+                <include refid="RolesMapper.columns"/>
+            </when>
+            <when test="resource.table == 'user_role'">
+                <include refid="UserRolesMapper.columns"/>
+            </when>
+            <when test="resource.table == 'menu_permission'">
+                <include refid="MenuPermissionsMapper.columns"/>
+            </when>
+            <when test="resource.table == 'menu'">
+                <include refid="MenuStructureMapper.columns"/>
+            </when>
+            <when test="resource.table == 'code_group'">
+                <include refid="CodeGroupsMapper.columns"/>
+            </when>
+            <when test="resource.table == 'organization'">
+                <include refid="OrganizationsMapper.columns"/>
+            </when>
+            <when test="resource.table == 'korus_personnel_snapshot'">
+                <include refid="UsersMapper.personnelColumns"/>
+            </when>
+            <when test="resource.table == 'organization_user_mapping'">
+                <include refid="UsersMapper.positionColumns"/>
+            </when>
+            <otherwise>NULL</otherwise>
+        </choose>
+    </sql>
+    <select id="list" resultType="map">
+        SELECT <include refid="projection"/>
+        FROM ${resource.table}
+        <where>
+            <foreach collection="filters" index="column" item="value">
+                AND ${column} = #{value}
+            </foreach>
+        </where>
+        ORDER BY ${resource.key}
+    </select>
+    <select id="get" resultType="map">
+        SELECT <include refid="projection"/>
+        FROM ${resource.table}
+        WHERE ${resource.key} = #{id}
+    </select>
+    <select id="insert" resultType="map" affectData="true" flushCache="true">
+        INSERT INTO ${resource.table}
+        <choose>
+            <when test="values.size() > 0">
+                (<foreach collection="values" index="column" item="value" separator=",">
+                    ${column}
+                </foreach>)
+                VALUES
+                (<foreach collection="values" index="column" item="value" separator=",">
+                    <choose>
+                        <when test="column == 'additional_attributes'">CAST(#{value} AS JSONB)</when>
+                        <otherwise>#{value}</otherwise>
+                    </choose>
+                </foreach>)
+            </when>
+            <otherwise>DEFAULT VALUES</otherwise>
+        </choose>
+        RETURNING <include refid="projection"/>
+    </select>
+    <update id="update">
+        UPDATE ${resource.table}
+        SET
+        <foreach collection="values" index="column" item="value" separator=",">
+            ${column} =
+            <choose>
+                <when test="column == 'additional_attributes'">CAST(#{value} AS JSONB)</when>
+                <otherwise>#{value}</otherwise>
+            </choose>
+        </foreach>
+        <if test="values.size() > 0">,</if>
+        updated_at = CURRENT_TIMESTAMP
+        WHERE ${resource.key} = #{id}
+    </update>
+    <select id="applicablePermissions" resultType="map">
+        SELECT p.*
+        FROM menu_permission p
+        WHERE p.account_id = #{accountId}
+           OR p.role_code IN (
+                SELECT r.role_code
+                FROM user_role r
+                WHERE r.account_id = #{accountId}
+           )
+           OR p.organization_id IN (
+                SELECT s.organization_id
+                FROM user_account a
+                JOIN korus_personnel_snapshot s ON s.personnel_id = a.personnel_id
+                WHERE a.account_id = #{accountId}
+                UNION
+                SELECT m.organization_id
+                FROM user_account a
+                JOIN organization_user_mapping m ON m.personnel_id = a.personnel_id
+                WHERE a.account_id = #{accountId}
+           )
+        ORDER BY p.permission_id
+    </select>
+    <select id="health" resultType="int">
+        SELECT 1
+        FROM flyway_schema_history
+        WHERE success = TRUE
+        LIMIT 1
+    </select>
+</mapper>

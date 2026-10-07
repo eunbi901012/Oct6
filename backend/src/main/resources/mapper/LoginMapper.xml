@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.knue.common.adapter.mybatis.LoginMapper">
+    <select id="credentials" resultType="map">
+        SELECT account_id, password_hash, use_status
+        FROM user_account
+        WHERE login_id = #{loginId}
+    </select>
+    <select id="sessionAccount" resultType="map">
+        SELECT a.account_id, a.login_id, a.use_status, s.session_status
+        FROM session s
+        JOIN user_account a ON a.account_id = s.account_id
+        WHERE s.session_id = #{sessionId}
+    </select>
+    <insert id="createSession">
+        INSERT INTO session (session_id, account_id)
+        VALUES (#{sessionId}, #{accountId})
+    </insert>
+    <delete id="deleteSession">
+        DELETE FROM session
+        WHERE session_id = #{sessionId}
+    </delete>
+</mapper>

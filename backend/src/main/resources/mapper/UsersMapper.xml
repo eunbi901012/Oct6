@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UsersMapper">
+    <sql id="personnelColumns">
+        personnel_id, employee_number, person_name, organization_id, job_grade,
+        employment_status, retirement_date, last_synced_at, use_status, created_at, updated_at
+    </sql>
+    <sql id="positionColumns">
+        mapping_id, personnel_id, organization_id, position_name, use_status, created_at, updated_at
+    </sql>
+</mapper>
